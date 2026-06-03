@@ -7,7 +7,11 @@
 using namespace std;
 
 int acc();
+int userMenu();
+int adminMenu();
 int menuSelect(int _select, int _kiekis, int _notNULL);
+int longestText(string _tekstoMasyvas[],int n);
+void wait();
 
 int main() {
     int _select;
@@ -16,20 +20,26 @@ int main() {
     SetConsoleCP(CP_UTF8);
     //login
     _select = acc();
-    if (_select == 0) {
-        cout << "== Prisijungimas nutrauktas ==" << endl;
-        return 0;
-    }
-    if (_select == 3) {
-        cout << "== Nežinoma naudotojo rolė!         ==" << endl;
-        cout << "== Susisiekite su Administratoriumi ==" << endl;
-        string wait;
-        cin.ignore();
-        getline(cin, wait);
-        return 0;
-    }
 
+    switch (_select) {
+        default: {
+            cout << "==     Prisijungimas nutrauktas!         ==" << endl;
+            return 0;
+        }
+            case 1: {
+            return adminMenu();
+        }
+            case 2: {
+            return userMenu();
+        }
+            case 3: {
+            cout << "== Nežinoma naudotojo rolė!         ==" << endl;
+            cout << "== Susisiekite su Administratoriumi ==" << endl;
+            wait();
+            return 0;
+        }
 
+    }
 
 
 
@@ -53,4 +63,21 @@ int menuSelect(int _select, int _kiekis, int _notNULL) { //start _notNULL
         cout << ">> Pasirinkimas ne tinkamas, rinkites iš menių<<" << endl;
         cout << ">>Pakartokite įvedimą" << endl;
     }
+}
+
+int longestText(string _tekstoMasyvas[],int n) {  // Tikrinam ilgiausia teksta
+
+    int _tekstoIlgis = 0;
+    for (int i=0; i < n; i++) {
+        if (_tekstoIlgis<_tekstoMasyvas[i].length()) {
+            _tekstoIlgis = _tekstoMasyvas[i].length();
+        }
+    }
+    return _tekstoIlgis;
+}
+
+void wait() {
+    string _wait;
+    cin.ignore();
+    getline(cin,_wait);
 }

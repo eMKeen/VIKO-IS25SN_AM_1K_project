@@ -5,6 +5,7 @@
 using namespace std;
 
 int menuSelect(int _select, int _kiekis, int _notNULL);
+void wait();
 
 struct userData {
     string username;
@@ -26,6 +27,7 @@ int acc() {
     string _name;
     string _pwd;
     int _ms = 0;
+    int _repeat = 0; //Prisijungimo bandimai
     while (true) {
         cout << "===========================================" << endl;
         cout << "== Įveskite naudotojo vardą == : ";
@@ -47,10 +49,12 @@ int acc() {
                 switch (_user.role) {
                     case 'a': {
                         cout << "== Jus prisijungete kaip Administratorius ==" << endl;
+                        wait();
                         return 1;
                     }
                     case 'u': {
                         cout << "== Jus prisijungete kaip Naudotojas ==" << endl;
+                        wait();
                         return 2;
                     }
                     default: {
@@ -59,12 +63,22 @@ int acc() {
                 }
             }
         }
+        _repeat++;
+        if (_repeat < 4) {
+            cout << "== Ne teisingai įvestas Vardas arba Slaptažodis ==" << endl;
+            cout << "===========================================" << endl;
+            cout << "==          Liko bnadymų: " << 4 - _repeat << "              ==" << endl;
+            cout << "== Kartoti prisijungima spauskite    - 1 ==" << endl;
+            cout << "== Nutraukti prisijungima spauskite  - 0 ==" << endl;
+            cout << "===========================================" << endl;
 
-        cout << "== Ne teisingai įvestas Vardas arba Slaptažodis ==" << endl;
-        cout << "===========================================" << endl;
-        cout << "== Kartoti prisijungima spauskite    == - 1" << endl;
-        cout << "== Nutraukti prisijungima spauskite  == - 0" << endl;
-        cout << "===========================================" << endl;
+        } else {
+            cout << "===========================================" << endl;
+            cout << "==    Jus viršijote bandymų kiekį!       ==" << endl;
+            cout << "===========================================" << endl;
+            wait();
+            return 0;
+        }
         _ms = menuSelect(_ms, 1, 0);
 
         if (_ms == 0) {
