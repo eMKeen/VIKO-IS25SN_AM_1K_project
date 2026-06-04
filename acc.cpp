@@ -45,14 +45,15 @@ int acc() {
         userData _user;
         while (_user.getData(_inFile)) {
             if (_user.username == _name && _user.password == _pwd) {
-                cout << "== Prisijungimas sėkmingas ==" << endl;
                 switch (_user.role) {
                     case 'a': {
+                        cout << "==       Prisijungimas sėkmingas          ==" << endl;
                         cout << "== Jus prisijungete kaip Administratorius ==" << endl;
                         wait();
                         return 1;
                     }
                     case 'u': {
+                        cout << "==     Prisijungimas sėkmingas      ==" << endl;
                         cout << "== Jus prisijungete kaip Naudotojas ==" << endl;
                         wait();
                         return 2;

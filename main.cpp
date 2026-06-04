@@ -17,6 +17,7 @@ int longestText(string _tekstoMasyvas[],int n);
 void wait();
 void commonLine(int _lineLenght, string _text, int _select, int _menuSelect);
 string toLower(string text);
+int myliuLietuvybe(const string& txt);
 
 int main() {
     int _select;
@@ -38,7 +39,7 @@ int main() {
             return userMenu();
         }
             case 3: {
-            cout << "== Nežinoma naudotojo rolė!         ==" << endl;
+            cout << "==     Jūsų paskyra blokuota!        ==" << endl;
             cout << "== Susisiekite su Administratoriumi ==" << endl;
             wait();
             return 0;
@@ -84,6 +85,7 @@ void wait() {
 
 void commonLine(int _lineLenght, string _text, int _select, int _menuSelect) {
     int _textLenght = _text.length();
+    int _lineCorection = _text.length() - myliuLietuvybe(_text);
     switch (_select) {
         default: {
             cout << format("{:-<{}}",_text,_lineLenght) << endl; //Brukšnis
@@ -96,10 +98,10 @@ void commonLine(int _lineLenght, string _text, int _select, int _menuSelect) {
         }break;
         case 3: {
             string _menuText = " - " + to_string(_menuSelect);
-            cout << format("{:<{}}{:>5}",_text,_lineLenght - 5,_menuText) << endl; // Menu select
+            cout << format("{:<{}}{:>5}",_text,_lineLenght + _lineCorection - 5,_menuText) << endl; // Menu select
         }break;
         case 4: {
-            cout << format("{:<{}}{:>3}",_text,_lineLenght - 3," - "); // Menu select
+            cout << format("{:<{}}{:>3}",_text,_lineLenght + _lineCorection - 3," - "); // Menu select
         }break;
 
     }
@@ -114,4 +116,17 @@ string toLower(string text) {
               });
 
     return text;
+}
+
+int myliuLietuvybe(const string& txt) {
+    int _ilgis = 0;
+
+    for (int i = 0; i < txt.length(); i++) {
+        unsigned char c = txt[i];
+        if ((c & 0b11000000) != 0b10000000) {
+            _ilgis++;
+        }
+    }
+
+    return _ilgis;
 }

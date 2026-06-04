@@ -91,11 +91,12 @@ void viewRecords() {
         } else if (_user.role == 'u') {
             _role = "Naudotojas";
         } else {
-            _role = "Klaida!";
+            _role = "Blokuota!";
         }
         cout << format("{:<2} - {:<10}{:<10}{:>20}",_line,_user.username,_user.password,_role) << endl;
     }
-    cout << format("{:-<45}", "") << endl;
+    commonLine(45,"",0,0);
+    commonLine(45,"Spauskite ENTER",2,0);
     wait();
 }
 
@@ -155,8 +156,185 @@ void addRecord() {
     commonLine(45,"",0,0);
     wait();
 };
-void editRecord() {};
-void deleteRecord() {};
+void editRecord() {
+    vector<userData> _users;
+    userData _user;
+    ifstream inFile("../DB/ACC/ACC");
+
+    if (!inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    while (_user.getData(inFile)) {
+        _users.push_back(_user);
+    }
+    inFile.close();
+
+    if (_users.empty()) {
+        commonLine(45,"",0,0);
+        commonLine(45,"Paskyrų nėra",2,0);
+        commonLine(45,"Spauskite ENTER",2,0);
+        commonLine(45,"",0,0);
+        wait();
+        return;
+    }
+
+    viewRecords();
+
+    int _select = 0;
+
+    commonLine(45,"",0,0);
+    commonLine(45,"Pasirinkite paskyros numerį",1,0);
+    commonLine(45,"",0,0);
+
+    _select = menuSelect(_select, _users.size(), 1);
+    int _index = _select - 1;
+    _select = 0;
+    commonLine(45,"",0,0);
+    commonLine(45,"Pasirinkite redagavima",2,0);
+    commonLine(45,"Naudotojo vardą",3,1);
+    commonLine(45,"Slaptažodį ",3,2);
+    commonLine(45,"Koreguoti rolę arba blokuoti",3,3);
+    commonLine(45,"Atšaukti",3,0);
+    commonLine(45,"",0,0);
+
+    _select = menuSelect(_select, 3, 0);
+
+    switch (_select) {
+        default: {
+            return;
+        }
+        case 1: {
+            while (true) {
+                commonLine(45,"Įveskite nauja naudotojo varda:",4,0);
+                cin >> _users[_index].username;
+                toLower(_users[_index].username);
+
+                if (!userExists(_users[_index].username)) {
+                    break;
+                }
+
+                commonLine(45,"",0,0);
+                commonLine(45,"Toks naudotojas jau egzistoja",2,0);
+                commonLine(45,"Spauskite ENTER",2,0);
+                commonLine(45,"",0,0);
+                wait();
+            }
+        } break;
+        case 2: {
+            commonLine(45,"Įveskite nauja slaptažodį:",4,0);
+            cin >> _users[_index].password;
+        } break;
+        case 3: {
+            while (true) {
+                int _roleSelect = 0;
+                commonLine(45,"",0,0);
+                commonLine(45,"Pasirinkite veiksmą",2,0);
+                commonLine(45,"Keisti į Administratorių",3,1);
+                commonLine(45,"Keisti į Naudotoją ",3,2);
+                commonLine(45,"Blokuoti Paskyrą",3,3);
+                commonLine(45,"Atšaukti",3,0);
+                commonLine(45,"",0,0);
+
+                _roleSelect = menuSelect(_roleSelect, 3, 0);
+                char _tempRole;
+
+                switch (_roleSelect) {
+                    default: {
+                        return;
+                    }
+                    case 1: {
+                        _tempRole = 'a';
+                    }break;
+                    case 2: {
+                        _tempRole = 'u';
+                    }break;
+                    case 3: {
+                        _tempRole = 'b';
+                    }break;
+                }
+                if (_users[_index].role != _tempRole) {
+                    _users[_index].role = _tempRole;
+                    break;
+                }
+
+                commonLine(45,"",0,0);
+                commonLine(45,"Esamas veiksmas jau yra pritaikytas",2,0);
+                commonLine(45,"Pakartokite pasirinkimą",2,0);
+            }
+        }break;
+    }
+
+    ofstream outFile("../DB/ACC/ACC");
+
+    if (!outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    for (const userData& _user : _users) {
+        outFile << _user.username << ";" << _user.password << ";" << _user.role << endl;
+    }
+
+    commonLine(45,"",0,0);
+    commonLine(45,"Paskyra sekmingai atnaujinta",2,0);
+    commonLine(45,"Spauskite ENTER",2,0);
+    commonLine(45,"",0,0);
+    wait();
+};
+
+void deleteRecord() {
+    vector<userData> _users;
+    userData _user;
+
+    ifstream inFile("../DB/ACC/ACC");
+
+    if (!inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    while (_user.getData(inFile)) {
+        _users.push_back(_user);
+    }
+
+    inFile.close();
+
+    if (_users.empty()) {
+        commonLine(45, "", 0, 0);
+        commonLine(45, "Paskyrų nėra", 2, 0);
+        commonLine(45, "Spauskite ENTER", 2, 0);
+        commonLine(45, "", 0, 0);
+        wait();
+        return;
+    }
+
+    viewRecords();
+
+    int _select = 0;
+
+    commonLine(45, "", 0, 0);
+    commonLine(45, "Pasirinkite trinamos paskyros numerį", 1, 0);
+    commonLine(45, "", 0, 0);
+
+    _select = menuSelect(_select, _users.size(), 1);
+    int _index = _select - 1;
+    _users.erase(_users.begin() + _index);
+
+    ofstream outFile("../DB/ACC/ACC");
+
+    if (!outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    for (const userData& _user : _users) {
+        outFile << _user.username << ";" << _user.password << ";" << _user.role << endl;
+    }
+
+    commonLine(45, "", 0, 0);
+    commonLine(45, "Paskyra sekmingai pasalinta", 2, 0);
+    commonLine(45, "Spauskite ENTER", 2, 0);
+    commonLine(45, "", 0, 0);
+    wait();
+};
 
 bool userExists(string _username)
 {
