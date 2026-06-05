@@ -160,7 +160,7 @@ Programoje realizuota naudotojų autentifikavimo ir teisių valdymo
 sistema. Kiekviena paskyra turi unikalų naudotojo 
 vardą, slaptažodį bei priskirtą vaidmenį.
 
-### Paskyrų tipai
+## Paskyrų tipai
 
 #### Administratorius
 Administratoriaus paskyra turi išplėstas teises ir gali:
