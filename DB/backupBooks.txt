@@ -1,0 +1,18 @@
+Programavimas, duomenų bazės;Andzej Aleksandresku;2002;3;
+Thinking in C++, Vol. 2;Bruce Eckel|Chuck D. Allison|Chuck Allison;2003;1;
+The C++ Standard Library;Nicolai M. Josuttis;2012;3;
+A Tour of C++;Bjarne Stroustrup;2023;1;
+Programming and Problem solving with C++;Nell Dale|Chip Weems;2014;3;
+A Complete Giude to Programming in C++;Ulla Kirch-Prinz|Peter Prinz;2004;4;
+Secure Coding in C and C++;Robert C. Seacord;2013;3;
+Beginning C++;Ivor Horton;2014;6;
+C++ Templates;David Vandevoorde|Nicolai M. Josuttis;2010;2;
+The Advanced C++ Book;M.T.Skinner;1992;1;
+Numerical Recipes;William T. Vetterling|Saul A. Teukolsky|William H. Press|Brian P. Flannery;2002;4;
+Programming Embedded Systems in C and C++;Michael Barr;1999;2;
+C++ for Dummies;Stephen Randy Davis;2004;5;
+Data Structures & Algorithms;Michael T. Goodrich|Roberto Tamassia|David Mount;2011;1;
+C++ Consurrency In Action;Anthony Williams;2019;2;
+Professional C++;M. Gregoire;2021;3;
+C++ FAQs;Marshall Cline|Greg Lomow|Mike Girou;1998;2;
+C++ The Core Language;Gregory Satir|Doug Brown;1995;3;
