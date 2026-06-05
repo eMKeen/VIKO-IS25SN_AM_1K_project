@@ -154,7 +154,7 @@ Pateikiama:
 - knygos, kurių visi egzemplioriai yra išduoti
 - bendras neprieinamų knygų skaičius.
 
-## Naudotojų valdymo sistema
+# Naudotojų valdymo sistema
 
 Programoje realizuota naudotojų autentifikavimo ir teisių valdymo 
 sistema. Kiekviena paskyra turi unikalų naudotojo 
@@ -199,7 +199,7 @@ Kur:
 - u - naudotojo paskyra
 - b - užblokuota paskyra.
 
-### Realizuotos apsaugos
+## Realizuotos apsaugos
 Sistemoje įgyvendintos šios apsaugos priemonės:
 - neleidžiama sukurti paskyros su jau egzistuojančiu naudotojo vardu
 - naudotojų vardų palyginimas atliekamas neatsižvelgiant į didžiąsias ir mažąsias raides;
