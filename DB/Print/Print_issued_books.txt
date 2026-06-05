@@ -1,0 +1,22 @@
+IŠDUOTŲ KNYGŲ ATASKAITA
+---------------------------------------------
+Knygos pavadinimas: C++ FAQs
+Autorius(-iai): Marshall Cline, Greg Lomow, Mike Girou
+Isduota: 1
+Studentai:
+- petrajtis
+---------------------------------------------
+Knygos pavadinimas: C++ Testine knyga
+Autorius(-iai): A.Mas
+Isduota: 1
+Studentai:
+- 19
+---------------------------------------------
+Knygos pavadinimas: Knyga Test 2
+Autorius(-iai): T.Šev
+Isduota: 1
+Studentai:
+- karkampas
+---------------------------------------------
+
+BENDRAI IŠDUOTA: 3

@@ -1,0 +1,113 @@
+VISŲ KNYGŲ ATASKAITA
+---------------------------------------------
+Knygos pavadinimas: Programavimas, duomenų bazės
+Autorius(-iai): Andzej Aleksandresku
+Laidos metai: 2002
+Esamas kiekis: 3 / 3
+---------------------------------------------
+Knygos pavadinimas: Thinking in C++, Vol. 2
+Autorius(-iai): Bruce Eckel, Chuck D. Allison, Chuck Allison
+Laidos metai: 2003
+Esamas kiekis: 1 / 1
+---------------------------------------------
+Knygos pavadinimas: The C++ Standard Library
+Autorius(-iai): Nicolai M. Josuttis
+Laidos metai: 2012
+Esamas kiekis: 3 / 3
+---------------------------------------------
+Knygos pavadinimas: A Tour of C++
+Autorius(-iai): Bjarne Stroustrup
+Laidos metai: 2023
+Esamas kiekis: 1 / 1
+---------------------------------------------
+Knygos pavadinimas: Programming and Problem solving with C++
+Autorius(-iai): Nell Dale, Chip Weems
+Laidos metai: 2014
+Esamas kiekis: 3 / 3
+---------------------------------------------
+Knygos pavadinimas: A Complete Giude to Programming in C++
+Autorius(-iai): Ulla Kirch-Prinz, Peter Prinz
+Laidos metai: 2004
+Esamas kiekis: 4 / 4
+---------------------------------------------
+Knygos pavadinimas: Secure Coding in C and C++
+Autorius(-iai): Robert C. Seacord
+Laidos metai: 2013
+Esamas kiekis: 3 / 3
+---------------------------------------------
+Knygos pavadinimas: Beginning C++
+Autorius(-iai): Ivor Horton
+Laidos metai: 2014
+Esamas kiekis: 6 / 6
+---------------------------------------------
+Knygos pavadinimas: C++ Templates
+Autorius(-iai): David Vandevoorde, Nicolai M. Josuttis
+Laidos metai: 2010
+Esamas kiekis: 2 / 2
+---------------------------------------------
+Knygos pavadinimas: The Advanced C++ Book
+Autorius(-iai): M.T.Skinner
+Laidos metai: 1992
+Esamas kiekis: 1 / 1
+---------------------------------------------
+Knygos pavadinimas: Numerical Recipes
+Autorius(-iai): William T. Vetterling, Saul A. Teukolsky, William H. Press, Brian P. Flannery
+Laidos metai: 2002
+Esamas kiekis: 4 / 4
+---------------------------------------------
+Knygos pavadinimas: Programming Embedded Systems in C and C++
+Autorius(-iai): Michael Barr
+Laidos metai: 1999
+Esamas kiekis: 2 / 2
+---------------------------------------------
+Knygos pavadinimas: C++ for Dummies
+Autorius(-iai): Stephen Randy Davis
+Laidos metai: 2004
+Esamas kiekis: 5 / 5
+---------------------------------------------
+Knygos pavadinimas: Data Structures & Algorithms
+Autorius(-iai): Michael T. Goodrich, Roberto Tamassia, David Mount
+Laidos metai: 2011
+Esamas kiekis: 1 / 1
+---------------------------------------------
+Knygos pavadinimas: C++ Consurrency In Action
+Autorius(-iai): Anthony Williams
+Laidos metai: 2019
+Esamas kiekis: 2 / 2
+---------------------------------------------
+Knygos pavadinimas: Professional C++
+Autorius(-iai): M. Gregoire
+Laidos metai: 2021
+Esamas kiekis: 3 / 3
+---------------------------------------------
+Knygos pavadinimas: C++ FAQs
+Autorius(-iai): Marshall Cline, Greg Lomow, Mike Girou
+Laidos metai: 1998
+Esamas kiekis: 1 / 2
+---------------------------------------------
+Knygos pavadinimas: C++ The Core Language
+Autorius(-iai): Gregory Satir, Doug Brown
+Laidos metai: 1995
+Esamas kiekis: 3 / 3
+---------------------------------------------
+Knygos pavadinimas: C++ Testine knyga
+Autorius(-iai): A.Mas
+Laidos metai: 2026
+Esamas kiekis: 0 / 1
+---------------------------------------------
+Knygos pavadinimas: Knyga Test 2
+Autorius(-iai): T.Šev
+Laidos metai: 2026
+Esamas kiekis: 1 / 1
+---------------------------------------------
+Knygos pavadinimas: Test Book 3
+Autorius(-iai): Sujat Albani
+Laidos metai: 2026
+Esamas kiekis: 1 / 1
+---------------------------------------------
+
+BENDRA SUVESTINĖ
+Knygų pavadinimų: 21
+Viso egzempliorių: 52
+Išduota: 2
+Prieinama: 50

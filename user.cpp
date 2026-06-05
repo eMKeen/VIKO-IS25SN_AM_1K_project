@@ -26,6 +26,7 @@ void reportAllBooks();
 void reportOutBooks();
 void reportUnavailableBooks();
 void emptyErrorMessage();
+vector<string> splitText(const string& _text, char _spliter);
 
 struct bookData {
     string title;
@@ -40,15 +41,23 @@ struct bookData {
         string _year;
         string _quantity;
 
+        authors.clear();
+        students.clear();
+
         if (!getline(_inFile, title, ';'))
             return false;
+
         getline(_inFile, _authors, ';');
         getline(_inFile, _year, ';');
         getline(_inFile, _quantity, ';');
         getline(_inFile, _students);
 
+        authors = splitText(_authors, '|');
+        students = splitText(_students, '|');
+
         year = stoi(_year);
         quantity = stoi(_quantity);
+
         return true;
     }
 };
@@ -134,6 +143,11 @@ void addBook() {
         }
     }
     _outFile << ";" << _book.year << ";" << _book.quantity << ";" << endl;
+
+    commonLine(45,"",0,0);
+    commonLine(45,"Knyga sėkmingai pridėta",2,0);
+    commonLine(45,"",0,0);
+    wait();
 }
 
 void viewBook() {
@@ -176,6 +190,26 @@ string allAuthors(const vector<string>& _authors) {
     return _result;
 }
 
+vector<string> splitText(const string& _text, char _spliter) {
+    vector<string> _result;
+    string _temp;
+
+    for (char c : _text) {
+        if (c == _spliter) {
+            if (!_temp.empty()) {
+                _result.push_back(_temp);
+                _temp.clear();
+            }
+        } else {
+            _temp += c;
+        }
+    }
+    if (!_temp.empty()) {
+        _result.push_back(_temp);
+    }
+    return _result;
+}
+
 void viewAllBooks() {
     vector<bookData> _books;
     bookData _book;
@@ -198,9 +232,6 @@ void viewAllBooks() {
     }
 
     showBookList(_books);
-
-    commonLine(45, "Sąrašas baigtas", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
 }
 
 bool containsText(const string& _text, const string& _search) {
@@ -219,15 +250,11 @@ bool authorMatches(const vector<string>& _authors, const string& _searchAuthor) 
 }
 
 void printBooksToFile(const vector<bookData>& _books) {
-    int _number = 1;
-    string _fileName = "../DB/Print/Print_" + to_string(_number) + ".txt";
+    ofstream _outFile("../DB/Print/Print.txt");
 
-    ofstream _outFile(_fileName);
-
-    while (!_outFile) {
-        _number++;
-        _fileName = "../DB/Print/Print_" + to_string(_number) + ".txt";
-        _outFile.open(_fileName);
+    if (!_outFile) {
+        cout << "Nepavyko sukurti failo!" << endl;
+        return;
     }
     for (int i = 0; i < _books.size(); i++) {
         int _available = _books[i].quantity - _books[i].students.size();
@@ -242,14 +269,13 @@ void printBooksToFile(const vector<bookData>& _books) {
 
     commonLine(45, "", 0, 0);
     commonLine(45, "Ataskaita isšaugota", 2, 0);
-    commonLine(45, _fileName, 2, 0);
+    commonLine(45, "Print.txt", 2, 0);
     commonLine(45, "", 0, 0);
     wait();
 }
 
 void showBookList(const vector<bookData>& _books) {
-    // int _counter = 0;
-    commonLine(45, "", 0, 0);
+    commonLine(90, "", 0, 0);
     int _lineCorrection = 0;
     for (int i = 0; i < _books.size(); i++) {
 
@@ -257,26 +283,18 @@ void showBookList(const vector<bookData>& _books) {
 
         int _available = _books[i].quantity - _books[i].students.size();
         cout << format(
-                    "{:<5}{:<3} | {:<{}} | {:<4} | {:>3} / {:<3}",
+                    "{:<5}{:<3} | {:<{}} | {:<4} | {:>3} / {:<3} \n {:<8}| {}",
                     "Nr.:", i + 1,
                     _books[i].title,
                     50 - _lineCorrection,
                     _books[i].year,
                     _available,
-                    _books[i].quantity
+                    _books[i].quantity,
+                    "",
+                    allAuthors(_books[i].authors)
                 ) << endl;
-        // _counter++;
-        // if (_counter == 25 && i != _books.size() - 1) {
-        //     commonLine(45, "Spauskite ENTER testi", 2, 0);
-        //     wait();
-        //     _counter = 0;
-        // }
+        commonLine(90, "", 0, 0);
     }
-    commonLine(45, "", 0, 0);
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Sarasas baigtas", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
-    commonLine(45, "", 0, 0);
     wait();
 }
 
@@ -462,7 +480,7 @@ void outBook() {
     cin.ignore();
     commonLine(45, "Iveskite studento pavardę:", 4, 0);
     getline(cin, _student);
-    toLower(_student);
+    _student = toLower(_student);
 
     if (studentHasBook(_books[_index].students, _student)) {
         commonLine(45, "", 0, 0);
@@ -547,7 +565,7 @@ void returnBook() {
     cin.ignore();
     commonLine(45, "Iveskite studento pavardę:", 4, 0);
     getline(cin, _student);
-    toLower(_student);
+    _student = toLower(_student);
 
     bool _found = false;
     for (int i = 0; i < _books[_index].students.size(); i++) {
@@ -570,6 +588,11 @@ void returnBook() {
     }
 
     ofstream _outFile("../DB/bookDataBase");
+
+    if (!_outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
 
     for (const bookData& book : _books) {
         _outFile << book.title << ";";
