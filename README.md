@@ -125,7 +125,7 @@ Leidžia pašalinti knygą iš duomenų bazės.
 - negalima pašallinti knygos, kuri yra išduota studentams
 - pirmiausia turi būti grąžinti visi egzemplioriai.
 
-### Ataskaitų generavimas
+## Ataskaitų generavimas
 ### 1. Visų knygų ataskaita
 Failai:
 >Print_all_books.txt
