@@ -5,5 +5,10 @@ Autorius(-iai): A.Mas
 Laidos metai: 2026
 Kiekis: 0 / 1
 ---------------------------------------------
+Knygos pavadinimas: Knyga Test 2
+Autorius(-iai): T.Šev
+Laidos metai: 2026
+Kiekis: 0 / 1
+---------------------------------------------
 
-Neprieinamu knygu pavadinimu: 1
+Neprieinamu knygu pavadinimu: 2

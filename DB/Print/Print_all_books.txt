@@ -98,16 +98,21 @@ Esamas kiekis: 0 / 1
 Knygos pavadinimas: Knyga Test 2
 Autorius(-iai): T.Šev
 Laidos metai: 2026
-Esamas kiekis: 1 / 1
+Esamas kiekis: 0 / 1
 ---------------------------------------------
 Knygos pavadinimas: Test Book 3
 Autorius(-iai): Sujat Albani
 Laidos metai: 2026
 Esamas kiekis: 1 / 1
 ---------------------------------------------
+Knygos pavadinimas: Turbo Pascal
+Autorius(-iai): Tomas Eddisson
+Laidos metai: 1992
+Esamas kiekis: 1 / 1
+---------------------------------------------
 
 BENDRA SUVESTINĖ
-Knygų pavadinimų: 21
-Viso egzempliorių: 52
-Išduota: 2
+Knygų pavadinimų: 22
+Viso egzempliorių: 53
+Išduota: 3
 Prieinama: 50

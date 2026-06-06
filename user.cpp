@@ -25,8 +25,8 @@ void reportMenu();
 void reportAllBooks();
 void reportOutBooks();
 void reportUnavailableBooks();
-void emptyErrorMessage();
 vector<string> splitText(const string& _text, char _spliter);
+void announceMessage(const string& _text1, const string& _text2 = "", bool _wait = true);
 
 struct bookData {
     string title;
@@ -144,10 +144,7 @@ void addBook() {
     }
     _outFile << ";" << _book.year << ";" << _book.quantity << ";" << endl;
 
-    commonLine(45,"",0,0);
-    commonLine(45,"Knyga sėkmingai pridėta",2,0);
-    commonLine(45,"",0,0);
-    wait();
+    announceMessage("Knyga sėkmingai pridėta");
 }
 
 void viewBook() {
@@ -227,7 +224,7 @@ void viewAllBooks() {
     _inFile.close();
 
     if (_books.empty()) {
-        emptyErrorMessage();
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
 
@@ -249,53 +246,324 @@ bool authorMatches(const vector<string>& _authors, const string& _searchAuthor) 
     return false;
 }
 
-void printBooksToFile(const vector<bookData>& _books) {
-    ofstream _outFile("../DB/Print/Print.txt");
+void editBook() {
+    vector<bookData> _books;
+    bookData _book;
 
-    if (!_outFile) {
-        cout << "Nepavyko sukurti failo!" << endl;
+    ifstream _inFile("../DB/bookDataBase");
+    if (!_inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
         return;
     }
-    for (int i = 0; i < _books.size(); i++) {
-        int _available = _books[i].quantity - _books[i].students.size();
 
-        _outFile << "Nr.: " << i + 1 << endl;
-        _outFile << "Knygos pavadinimas: " << _books[i].title << endl;
-        _outFile << "Autorius(-iai): " << allAuthors(_books[i].authors) << endl;
-        _outFile << "Laidos metai: " << _books[i].year << endl;
-        _outFile << "Esamas kiekis: " << _available << " / " << _books[i].quantity << endl;
-        _outFile << "---------------------------------------------" << endl;
+    while (_book.getBookData(_inFile)) {
+        _books.push_back(_book);
     }
 
+    _inFile.close();
+
+    if (_books.empty()) {
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
+        return;
+    }
+    showBookList(_books);
+
+    int _select = 0;
+    announceMessage("Pasirinkite redaguojamos knygos nr.","", false);
+
+    _select = menuSelect(_select, _books.size(), 1);
+    int _index = _select - 1;
     commonLine(45, "", 0, 0);
-    commonLine(45, "Ataskaita isšaugota", 2, 0);
-    commonLine(45, "Print.txt", 2, 0);
+    commonLine(45, "Pasirinkite redagavimą", 2, 0);
+    commonLine(45, "Knygos pavadinimas", 3, 1);
+    commonLine(45, "Autorius(-iai)", 3, 2);
+    commonLine(45, "Leidimo metai", 3, 3);
+    commonLine(45, "Egzempliorių kiekis", 3, 4);
+    commonLine(45, "Atšaukti", 3, 0);
     commonLine(45, "", 0, 0);
-    wait();
+
+    _select = menuSelect(_select, 4, 0);
+    switch (_select) {
+        case 1: {
+            cin.ignore();
+            commonLine(45, "Įveskite naują pavadinimą:", 4, 0);
+            getline(cin, _books[_index].title);
+            break;
+        }
+        case 2: {
+            _books[_index].authors.clear();
+
+            int _count = 0;
+            commonLine(45, "Kiek autorių?", 4, 0);
+            _count = menuSelect(_count, 10, 1);
+
+            cin.ignore();
+            for (int i = 0; i < _count; i++) {
+                string _author;
+                commonLine(45, "Iveskite autoriu", 3, i + 1);
+                getline(cin, _author);
+                _books[_index].authors.push_back(_author);
+            }
+            break;
+        }
+        case 3: {
+            commonLine(45, "Iveskite naujus leidimo metus:", 4, 0);
+            cin >> _books[_index].year;
+            break;
+        }
+
+        case 4: {
+            commonLine(45, "Iveskite naują egzempliorių kiekį:", 4, 0);
+            cin >> _books[_index].quantity;
+
+            if (_books[_index].quantity < _books[_index].students.size()) {
+                announceMessage("Kiekis mažesnis nei išduota", "Pakeitimas negalimas");
+                return;
+            }
+            break;
+        }
+        default:
+            return;
+    }
+
+    ofstream _outFile("../DB/bookDataBase");
+
+    if (!_outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    for (const bookData& book : _books) {
+        _outFile << book.title << ";";
+        for (int i = 0; i < book.authors.size(); i++) {
+            _outFile << book.authors[i];
+            if (i != book.authors.size() - 1)
+                _outFile << "|";
+        }
+
+        _outFile << ";" << book.year << ";" << book.quantity << ";";
+
+        for (int i = 0; i < book.students.size(); i++) {
+            _outFile << book.students[i];
+            if (i != book.students.size() - 1)
+                _outFile << "|";
+        }
+        _outFile << endl;
+    }
+
+    announceMessage("Knyga sekmingai atnaujinta", "Spauskite ENTER");
 }
 
-void showBookList(const vector<bookData>& _books) {
-    commonLine(90, "", 0, 0);
-    int _lineCorrection = 0;
-    for (int i = 0; i < _books.size(); i++) {
+void deleteBook() {
+    vector<bookData> _books;
+    bookData _book;
 
-        _lineCorrection = myliuLietuvybe(_books[i].title) - _books[i].title.length();
+    ifstream _inFile("../DB/bookDataBase");
 
-        int _available = _books[i].quantity - _books[i].students.size();
-        cout << format(
-                    "{:<5}{:<3} | {:<{}} | {:<4} | {:>3} / {:<3} \n {:<8}| {}",
-                    "Nr.:", i + 1,
-                    _books[i].title,
-                    50 - _lineCorrection,
-                    _books[i].year,
-                    _available,
-                    _books[i].quantity,
-                    "",
-                    allAuthors(_books[i].authors)
-                ) << endl;
-        commonLine(90, "", 0, 0);
+    if (!_inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
     }
-    wait();
+
+    while (_book.getBookData(_inFile)) {
+        _books.push_back(_book);
+    }
+    _inFile.close();
+
+    if (_books.empty()) {
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
+        return;
+    }
+    showBookList(_books);
+
+    int _select = 0;
+    announceMessage("Pasirinkite šalinamos knygos nr.", "",false);
+
+
+    _select = menuSelect(_select, _books.size(), 1);
+    int _index = _select - 1;
+    if (!_books[_index].students.empty()) {
+        announceMessage("Knyga yra išduota studentams", "Pirmiausia grąžinkite knygą");
+        return;
+    }
+    _books.erase(_books.begin() + _index);
+
+    ofstream _outFile("../DB/bookDataBase");
+
+    if (!_outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    for (const bookData& book : _books) {
+        _outFile << book.title << ";";
+        for (int i = 0; i < book.authors.size(); i++) {
+            _outFile << book.authors[i];
+            if (i != book.authors.size() - 1)
+                _outFile << "|";
+        }
+
+        _outFile << ";" << book.year << ";" << book.quantity << ";";
+
+        for (int i = 0; i < book.students.size(); i++) {
+            _outFile << book.students[i];
+            if (i != book.students.size() - 1)
+                _outFile << "|";
+        }
+        _outFile << endl;
+    }
+
+    announceMessage("Knyga sekmingai pašalinta", "Spauskite ENTER");
+}
+
+void outBook() {
+    vector<bookData> _books;
+    bookData _book;
+
+    ifstream _inFile("../DB/bookDataBase");
+
+    if (!_inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    while (_book.getBookData(_inFile)) {
+        _books.push_back(_book);
+    }
+
+    _inFile.close();
+
+    if (_books.empty()) {
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
+        return;
+    }
+    showBookList(_books);
+
+    int _select = 0;
+    announceMessage("Pasirinkite išduodamos knygos numerį", "",false);
+
+    _select = menuSelect(_select, _books.size(), 1);
+    int _index = _select - 1;
+    int _available = _books[_index].quantity - _books[_index].students.size();
+    if (_available <= 0) {
+        announceMessage("Laisvų egzempliorių nėra", "Spauskite ENTER");
+        return;
+    }
+
+    string _student;
+    cin.ignore();
+    commonLine(45, "Iveskite studento pavardę:", 4, 0);
+    getline(cin, _student);
+    _student = toLower(_student);
+
+    if (studentHasBook(_books[_index].students, _student)) {
+        announceMessage("Studentas jau turi šią knygą", "Spauskite ENTER");
+        return;
+    }
+    _books[_index].students.push_back(_student);
+
+    ofstream _outFile("../DB/bookDataBase");
+
+    if (!_outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    for (const bookData& book : _books) {
+        _outFile << book.title << ";";
+        for (int i = 0; i < book.authors.size(); i++) {
+            _outFile << book.authors[i];
+            if (i != book.authors.size() - 1) {
+                _outFile << "|";
+            }
+        }
+        _outFile << ";" << book.year << ";" << book.quantity << ";";
+        for (int i = 0; i < book.students.size(); i++) {
+            _outFile << book.students[i];
+            if (i != book.students.size() - 1) {
+                _outFile << "|";
+            }
+        }
+        _outFile << endl;
+    }
+
+    announceMessage("Knyga sekmingai išduota", "Spauskite ENTER");
+}
+
+void returnBook() {
+    vector<bookData> _books;
+    bookData _book;
+
+    ifstream _inFile("../DB/bookDataBase");
+
+    if (!_inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+    while (_book.getBookData(_inFile)) {
+        _books.push_back(_book);
+    }
+
+    _inFile.close();
+
+    if (_books.empty()) {
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
+        return;
+    }
+    showBookList(_books);
+
+    int _select = 0;
+    announceMessage("Pasirinkite grąžinamos knygos numerį", "",false);
+
+    _select = menuSelect(_select, _books.size(), 1);
+    int _index = _select - 1;
+    if (_books[_index].students.empty()) {
+        announceMessage("Ši knygą nėra išduota", "Spauskite ENTER");
+        return;
+    }
+
+    string _student;
+    cin.ignore();
+    commonLine(45, "Iveskite studento pavardę:", 4, 0);
+    getline(cin, _student);
+    _student = toLower(_student);
+
+    bool _found = false;
+    for (int i = 0; i < _books[_index].students.size(); i++) {
+        string _currentStudent = _books[_index].students[i];
+        toLower(_currentStudent);
+        if (_currentStudent == _student) {
+            _books[_index].students.erase(_books[_index].students.begin() + i);
+            _found = true;
+            break;
+        }
+    }
+
+    if (!_found) {
+        announceMessage("Studentas prie šios knygos nerastas", "Spauskite ENTER");
+        return;
+    }
+
+    ofstream _outFile("../DB/bookDataBase");
+
+    if (!_outFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return;
+    }
+
+    for (const bookData& book : _books) {
+        _outFile << book.title << ";";
+        for (int i = 0; i < book.authors.size(); i++) {
+            _outFile << book.authors[i];
+            if (i != book.authors.size() - 1)
+                _outFile << "|";
+        }
+        _outFile << ";" << book.year << ";" << book.quantity << ";";
+        for (int i = 0; i < book.students.size(); i++) {
+            _outFile << book.students[i];
+            if (i != book.students.size() - 1)
+                _outFile << "|";
+        }
+        _outFile << endl;
+    }
+
+    announceMessage("Knyga sekmingai grąžinta", "Spauskite ENTER");
 }
 
 void viewBooksByCriteria() {
@@ -316,14 +584,11 @@ void viewBooksByCriteria() {
     _inFile.close();
 
     if (_books.empty()) {
-        emptyErrorMessage();
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
     int _criteriaCount = 0;
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Pagal kiek kriteriju ieskoti?", 2, 0);
-    commonLine(45, "Min 1, max 3", 2, 0);
-    commonLine(45, "", 0, 0);
+    announceMessage("Pagal kiek kriteriju ieskoti?", "Min 1, max 3", false);
 
     _criteriaCount = menuSelect(_criteriaCount, 3, 1);
     bool _useAuthor = false;
@@ -401,11 +666,7 @@ void viewBooksByCriteria() {
     }
 
     if (_results.empty()) {
-        commonLine(45, "", 0, 0);
-        commonLine(45, "Rzultatų nerasta", 2, 0);
-        commonLine(45, "Spauskite ENTER", 2, 0);
-        commonLine(45, "", 0, 0);
-        wait();
+        announceMessage("Rezultatų nerasta", "Spauskite ENTER");
         return;
     }
 
@@ -435,373 +696,6 @@ bool studentHasBook(const vector<string>& _students, const string& _student) {
     }
 
     return false;
-}
-
-void outBook() {
-    vector<bookData> _books;
-    bookData _book;
-
-    ifstream _inFile("../DB/bookDataBase");
-
-    if (!_inFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-    while (_book.getBookData(_inFile)) {
-        _books.push_back(_book);
-    }
-
-    _inFile.close();
-
-    if (_books.empty()) {
-        emptyErrorMessage();
-        return;
-    }
-    showBookList(_books);
-
-    int _select = 0;
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Pasirinkite išduodamos knygos numerį", 1, 0);
-    commonLine(45, "", 0, 0);
-
-    _select = menuSelect(_select, _books.size(), 1);
-    int _index = _select - 1;
-    int _available = _books[_index].quantity - _books[_index].students.size();
-    if (_available <= 0) {
-        commonLine(45, "", 0, 0);
-        commonLine(45, "Laisvų egzempliorių nėra", 2, 0);
-        commonLine(45, "Spauskite ENTER", 2, 0);
-        commonLine(45, "", 0, 0);
-        wait();
-        return;
-    }
-
-    string _student;
-    cin.ignore();
-    commonLine(45, "Iveskite studento pavardę:", 4, 0);
-    getline(cin, _student);
-    _student = toLower(_student);
-
-    if (studentHasBook(_books[_index].students, _student)) {
-        commonLine(45, "", 0, 0);
-        commonLine(45, "Studentas jau turi šią knygą", 2, 0);
-        commonLine(45, "Spauskite ENTER", 2, 0);
-        commonLine(45, "", 0, 0);
-        wait();
-        return;
-    }
-    _books[_index].students.push_back(_student);
-
-    ofstream _outFile("../DB/bookDataBase");
-
-    if (!_outFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-    for (const bookData& book : _books) {
-        _outFile << book.title << ";";
-        for (int i = 0; i < book.authors.size(); i++) {
-            _outFile << book.authors[i];
-            if (i != book.authors.size() - 1) {
-                _outFile << "|";
-            }
-        }
-        _outFile << ";" << book.year << ";" << book.quantity << ";";
-        for (int i = 0; i < book.students.size(); i++) {
-            _outFile << book.students[i];
-            if (i != book.students.size() - 1) {
-                _outFile << "|";
-            }
-        }
-        _outFile << endl;
-    }
-
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Knyga sekmingai išduota", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
-}
-
-void returnBook() {
-    vector<bookData> _books;
-    bookData _book;
-
-    ifstream _inFile("../DB/bookDataBase");
-
-    if (!_inFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-    while (_book.getBookData(_inFile)) {
-        _books.push_back(_book);
-    }
-
-    _inFile.close();
-
-    if (_books.empty()) {
-        emptyErrorMessage();
-        return;
-    }
-    showBookList(_books);
-
-    int _select = 0;
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Pasirinkite grąžinamos knygos numerį", 1, 0);
-    commonLine(45, "", 0, 0);
-
-    _select = menuSelect(_select, _books.size(), 1);
-    int _index = _select - 1;
-    if (_books[_index].students.empty()) {
-        commonLine(45, "", 0, 0);
-        commonLine(45, "Ši knygą nėra išduota", 2, 0);
-        commonLine(45, "Spauskite ENTER", 2, 0);
-        commonLine(45, "", 0, 0);
-        wait();
-        return;
-    }
-
-    string _student;
-    cin.ignore();
-    commonLine(45, "Iveskite studento pavardę:", 4, 0);
-    getline(cin, _student);
-    _student = toLower(_student);
-
-    bool _found = false;
-    for (int i = 0; i < _books[_index].students.size(); i++) {
-        string _currentStudent = _books[_index].students[i];
-        toLower(_currentStudent);
-        if (_currentStudent == _student) {
-            _books[_index].students.erase(_books[_index].students.begin() + i);
-            _found = true;
-            break;
-        }
-    }
-
-    if (!_found) {
-        commonLine(45, "", 0, 0);
-        commonLine(45, "Studentas prie šios knygos nerastas", 2, 0);
-        commonLine(45, "Spauskite ENTER", 2, 0);
-        commonLine(45, "", 0, 0);
-        wait();
-        return;
-    }
-
-    ofstream _outFile("../DB/bookDataBase");
-
-    if (!_outFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-
-    for (const bookData& book : _books) {
-        _outFile << book.title << ";";
-        for (int i = 0; i < book.authors.size(); i++) {
-            _outFile << book.authors[i];
-            if (i != book.authors.size() - 1)
-                _outFile << "|";
-        }
-        _outFile << ";" << book.year << ";" << book.quantity << ";";
-        for (int i = 0; i < book.students.size(); i++) {
-            _outFile << book.students[i];
-            if (i != book.students.size() - 1)
-                _outFile << "|";
-        }
-        _outFile << endl;
-    }
-
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Knyga sekmingai grąžinta", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
-}
-
-void editBook() {
-    vector<bookData> _books;
-    bookData _book;
-
-    ifstream _inFile("../DB/bookDataBase");
-    if (!_inFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-
-    while (_book.getBookData(_inFile)) {
-        _books.push_back(_book);
-    }
-
-    _inFile.close();
-
-    if (_books.empty()) {
-        emptyErrorMessage();
-        return;
-    }
-    showBookList(_books);
-
-    int _select = 0;
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Pasirinkite redaguojamos knygos nr.", 1, 0);
-    commonLine(45, "", 0, 0);
-
-    _select = menuSelect(_select, _books.size(), 1);
-    int _index = _select - 1;
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Pasirinkite redagavimą", 2, 0);
-    commonLine(45, "Knygos pavadinimas", 3, 1);
-    commonLine(45, "Autorius(-iai)", 3, 2);
-    commonLine(45, "Leidimo metai", 3, 3);
-    commonLine(45, "Egzempliorių kiekis", 3, 4);
-    commonLine(45, "Atšaukti", 3, 0);
-    commonLine(45, "", 0, 0);
-
-    _select = menuSelect(_select, 4, 0);
-    switch (_select) {
-        case 1: {
-            cin.ignore();
-            commonLine(45, "Įveskite naują pavadinimą:", 4, 0);
-            getline(cin, _books[_index].title);
-            break;
-        }
-        case 2: {
-            _books[_index].authors.clear();
-
-            int _count = 0;
-            commonLine(45, "Kiek autorių?", 4, 0);
-            _count = menuSelect(_count, 10, 1);
-
-            cin.ignore();
-            for (int i = 0; i < _count; i++) {
-                string _author;
-                commonLine(45, "Iveskite autoriu", 3, i + 1);
-                getline(cin, _author);
-                _books[_index].authors.push_back(_author);
-            }
-            break;
-        }
-        case 3: {
-            commonLine(45, "Iveskite naujus leidimo metus:", 4, 0);
-            cin >> _books[_index].year;
-            break;
-        }
-
-        case 4: {
-            commonLine(45, "Iveskite naują egzempliorių kiekį:", 4, 0);
-            cin >> _books[_index].quantity;
-
-            if (_books[_index].quantity < _books[_index].students.size()) {
-                commonLine(45, "", 0, 0);
-                commonLine(45, "Kiekis mažesnis nei išduota", 2, 0);
-                commonLine(45, "Pakeitimas negalimas", 2, 0);
-                commonLine(45, "", 0, 0);
-                wait();
-                return;
-            }
-            break;
-        }
-        default:
-            return;
-    }
-
-    ofstream _outFile("../DB/bookDataBase");
-
-    if (!_outFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-    for (const bookData& book : _books) {
-        _outFile << book.title << ";";
-        for (int i = 0; i < book.authors.size(); i++) {
-            _outFile << book.authors[i];
-            if (i != book.authors.size() - 1)
-                _outFile << "|";
-        }
-
-        _outFile << ";" << book.year << ";" << book.quantity << ";";
-
-        for (int i = 0; i < book.students.size(); i++) {
-            _outFile << book.students[i];
-            if (i != book.students.size() - 1)
-                _outFile << "|";
-        }
-        _outFile << endl;
-    }
-
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Knyga sekmingai atnaujinta", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
-}
-
-void deleteBook() {
-    vector<bookData> _books;
-    bookData _book;
-
-    ifstream _inFile("../DB/bookDataBase");
-
-    if (!_inFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-
-    while (_book.getBookData(_inFile)) {
-        _books.push_back(_book);
-    }
-    _inFile.close();
-
-    if (_books.empty()) {
-        emptyErrorMessage();
-        return;
-    }
-    showBookList(_books);
-
-    int _select = 0;
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Pasirinkite šalinamos knygos nr.", 1, 0);
-    commonLine(45, "", 0, 0);
-
-    _select = menuSelect(_select, _books.size(), 1);
-    int _index = _select - 1;
-    if (!_books[_index].students.empty()) {
-        commonLine(45, "", 0, 0);
-        commonLine(45, "Knyga yra išduota studentams", 2, 0);
-        commonLine(45, "Pirmiausia grąžinkite knygą", 2, 0);
-        commonLine(45, "", 0, 0);
-        wait();
-        return;
-    }
-    _books.erase(_books.begin() + _index);
-
-    ofstream _outFile("../DB/bookDataBase");
-
-    if (!_outFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return;
-    }
-    for (const bookData& book : _books) {
-        _outFile << book.title << ";";
-        for (int i = 0; i < book.authors.size(); i++) {
-            _outFile << book.authors[i];
-            if (i != book.authors.size() - 1)
-                _outFile << "|";
-        }
-
-        _outFile << ";" << book.year << ";" << book.quantity << ";";
-
-        for (int i = 0; i < book.students.size(); i++) {
-            _outFile << book.students[i];
-            if (i != book.students.size() - 1)
-                _outFile << "|";
-        }
-        _outFile << endl;
-    }
-
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Knyga sekmingai pašalinta", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
 }
 
 void reportMenu() {
@@ -834,27 +728,11 @@ void reportMenu() {
     }
 }
 
-vector<bookData> loadBooks() {
-    vector<bookData> _books;
-    bookData _book;
-
-    ifstream _inFile("../DB/bookDataBase");
-
-    if (!_inFile) {
-        cout << "Nepavyko atidaryti failo!" << endl;
-        return _books;
-    }
-    while (_book.getBookData(_inFile)) {
-        _books.push_back(_book);
-    }
-    return _books;
-}
-
 void reportAllBooks() {
     vector<bookData> _books = loadBooks();
 
     if (_books.empty()) {
-        emptyErrorMessage();
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
 
@@ -884,18 +762,14 @@ void reportAllBooks() {
     _outFile << "Išduota: " << _totalOut << endl;
     _outFile << "Prieinama: " << _totalQuantity - _totalOut << endl;
 
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Ataskaita suformuota", 2, 0);
-    commonLine(45, "Print_all_books.txt", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
+    announceMessage("Ataskaita suformuota", "Print_all_books.txt");
 }
 
 void reportOutBooks() {
     vector<bookData> _books = loadBooks();
 
     if (_books.empty()) {
-        emptyErrorMessage();
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
 
@@ -920,19 +794,14 @@ void reportOutBooks() {
     }
 
     _outFile << "\nBENDRAI IŠDUOTA: " << _totalOut << endl;
-
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Ataskaita suformuota", 2, 0);
-    commonLine(45, "Print_issued_books.txt", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
+    announceMessage("Ataskaita suformuota", "Print_issued_books.txt");
 }
 
 void reportUnavailableBooks() {
     vector<bookData> _books = loadBooks();
 
     if (_books.empty()) {
-        emptyErrorMessage();
+        announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
 
@@ -954,17 +823,79 @@ void reportUnavailableBooks() {
         }
     }
     _outFile << "\nNeprieinamu knygu pavadinimu: " << _count << endl;
+    announceMessage("Ataskaita suformuota", "Print_unavailable_books.txt", true);
+}
+
+void announceMessage(const string& _text1, const string& _text2, bool _wait) {
     commonLine(45, "", 0, 0);
-    commonLine(45, "Ataskaita suformuota", 2, 0);
-    commonLine(45, "Print_unavailable_books.txt", 2, 0);
+    commonLine(45, _text1, 2, 0);
+    if (!_text2.empty()) {
+        commonLine(45, _text2, 2, 0);
+    }
     commonLine(45, "", 0, 0);
+
+    if (_wait) {
+        wait();
+    }
+}
+
+void printBooksToFile(const vector<bookData>& _books) {
+    ofstream _outFile("../DB/Print/Print.txt");
+
+    if (!_outFile) {
+        cout << "Nepavyko sukurti failo!" << endl;
+        return;
+    }
+    for (int i = 0; i < _books.size(); i++) {
+        int _available = _books[i].quantity - _books[i].students.size();
+
+        _outFile << "Nr.: " << i + 1 << endl;
+        _outFile << "Knygos pavadinimas: " << _books[i].title << endl;
+        _outFile << "Autorius(-iai): " << allAuthors(_books[i].authors) << endl;
+        _outFile << "Laidos metai: " << _books[i].year << endl;
+        _outFile << "Esamas kiekis: " << _available << " / " << _books[i].quantity << endl;
+        _outFile << "---------------------------------------------" << endl;
+    }
+
+    announceMessage("Ataskaita isšaugota", "Print.txt", true);
+}
+
+void showBookList(const vector<bookData>& _books) {
+    commonLine(90, "", 0, 0);
+    int _lineCorrection = 0;
+    for (int i = 0; i < _books.size(); i++) {
+
+        _lineCorrection = myliuLietuvybe(_books[i].title) - _books[i].title.length();
+
+        int _available = _books[i].quantity - _books[i].students.size();
+        cout << format(
+            "{:<5}{:<3} | {:<{}} | {:<4} | {:>3} / {:<3} \n {:<8}| {}",
+            "Nr.:", i + 1,
+            _books[i].title,
+            50 - _lineCorrection,
+            _books[i].year,
+            _available,
+            _books[i].quantity,
+            "",
+            allAuthors(_books[i].authors)
+        ) << endl;
+        commonLine(90, "", 0, 0);
+    }
     wait();
 }
 
-void emptyErrorMessage() {
-    commonLine(45, "", 0, 0);
-    commonLine(45, "Knygų sąrašas tuščias", 2, 0);
-    commonLine(45, "Spauskite ENTER", 2, 0);
-    commonLine(45, "", 0, 0);
-    wait();
+vector<bookData> loadBooks() {
+    vector<bookData> _books;
+    bookData _book;
+
+    ifstream _inFile("../DB/bookDataBase");
+
+    if (!_inFile) {
+        cout << "Nepavyko atidaryti failo!" << endl;
+        return _books;
+    }
+    while (_book.getBookData(_inFile)) {
+        _books.push_back(_book);
+    }
+    return _books;
 }
