@@ -63,7 +63,7 @@ struct bookData {
 };
 
 void printBooksToFile(const vector<bookData>& _books);
-void showBookList(const vector<bookData>& _books);
+void showBookList(const vector<bookData>& _books, bool _wait = true);
 vector<bookData> loadBooks();
 
 int userMenu() {
@@ -266,7 +266,7 @@ void editBook() {
         announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
-    showBookList(_books);
+    showBookList(_books, false);
 
     int _select = 0;
     announceMessage("Pasirinkite redaguojamos knygos nr.","", false);
@@ -373,7 +373,7 @@ void deleteBook() {
         announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
-    showBookList(_books);
+    showBookList(_books, false);
 
     int _select = 0;
     announceMessage("Pasirinkite šalinamos knygos nr.", "",false);
@@ -434,7 +434,7 @@ void outBook() {
         announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
-    showBookList(_books);
+    showBookList(_books, false);
 
     int _select = 0;
     announceMessage("Pasirinkite išduodamos knygos numerį", "",false);
@@ -506,7 +506,7 @@ void returnBook() {
         announceMessage("Knygų sąrašas tuščias", "Spauskite ENTER");
         return;
     }
-    showBookList(_books);
+    showBookList(_books, false);
 
     int _select = 0;
     announceMessage("Pasirinkite grąžinamos knygos numerį", "",false);
@@ -670,7 +670,7 @@ void viewBooksByCriteria() {
         return;
     }
 
-    showBookList(_results);
+    showBookList(_results, false);
 
     int _printSelect = 0;
     commonLine(45, "", 0, 0);
@@ -823,7 +823,7 @@ void reportUnavailableBooks() {
         }
     }
     _outFile << "\nNeprieinamu knygu pavadinimu: " << _count << endl;
-    announceMessage("Ataskaita suformuota", "Print_unavailable_books.txt", true);
+    announceMessage("Ataskaita suformuota", "Print_unavailable_books.txt");
 }
 
 void announceMessage(const string& _text1, const string& _text2, bool _wait) {
@@ -857,10 +857,10 @@ void printBooksToFile(const vector<bookData>& _books) {
         _outFile << "---------------------------------------------" << endl;
     }
 
-    announceMessage("Ataskaita isšaugota", "Print.txt", true);
+    announceMessage("Ataskaita isšaugota", "Print.txt");
 }
 
-void showBookList(const vector<bookData>& _books) {
+void showBookList(const vector<bookData>& _books, bool _wait) {
     commonLine(90, "", 0, 0);
     int _lineCorrection = 0;
     for (int i = 0; i < _books.size(); i++) {
@@ -881,7 +881,9 @@ void showBookList(const vector<bookData>& _books) {
         ) << endl;
         commonLine(90, "", 0, 0);
     }
-    wait();
+    if (_wait) {
+        wait();
+    }
 }
 
 vector<bookData> loadBooks() {
